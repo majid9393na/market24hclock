@@ -1,32 +1,24 @@
-name: Daily Screenshot
+from playwright.sync_api import sync_playwright
+from datetime import datetime
+import os
 
-on:
-  schedule:
-    - cron: "0 10 * * *"  # اجرای خودکار هر روز ساعت 10:00 UTC
-  workflow_dispatch:  # امکان اجرای دستی
+# تنظیمات
+URL = "https://market24hclock.com/"  # آدرس سایتی که می‌خوای اسکرین‌شات بگیری
+SAVE_DIR = "screenshots"
 
-jobs:
-  capture_screenshot:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+# ایجاد پوشه ذخیره در صورت نیاز
+os.makedirs(SAVE_DIR, exist_ok=True)
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.x"
+# گرفتن تاریخ و ساعت
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+screenshot_path = f"{SAVE_DIR}/screenshot_{timestamp}.png"
 
-      - name: Install dependencies
-        run: pip install playwright && playwright install
+# گرفتن اسکرین‌شات
+with sync_playwright() as p:
+    browser = p.chromium.launch()
+    page = browser.new_page()
+    page.goto(URL)
+    page.screenshot(path=screenshot_path)
+    browser.close()
 
-      - name: Run screenshot script
-        run: python screenshot.py  # اطمینان حاصل کن که این مسیر صحیح باشه
-
-      - name: Commit and push screenshot
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add screenshots/
-          git commit -m "New screenshot"
-          git push
+print(f"Screenshot saved: {screenshot_path}")
