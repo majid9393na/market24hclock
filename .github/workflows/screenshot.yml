@@ -2,7 +2,7 @@ name: Daily Screenshot
 
 on:
   schedule:
-    - cron: "0 9 * * *"  # اجرای هر روز ساعت 9 صبح UTC (13:30 ایران)
+    - cron: "0 10 * * *"  # اجرای هر روز ساعت 10 صبح UTC (14:30 ایران)
   workflow_dispatch:  # برای اجرای دستی
 
 jobs:
